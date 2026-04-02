@@ -1,0 +1,26 @@
+# IntelliJ
+.idea/
+
+# Node
+node_modules/
+
+# Env
+.env
+*.env
+
+# Gradle
+.gradle/
+build/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Backend specific
+backend/.gradle/
+backend/build/
+backend/.env
+backend/.idea/
+backend/src/main/resources/application-local.yml
