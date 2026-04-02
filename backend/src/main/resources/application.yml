@@ -1,0 +1,46 @@
+spring:
+  profiles:
+    active: local
+
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+      database: photosharing
+      auto-index-creation: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework: DEBUG
+
+
+# JWT configuration
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS:900000}           # 15 minutes (access token)
+  refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}  # 7 days (refresh token)
+
+# AWS S3 configuration
+cloud:
+  aws:
+    region:
+      static: ${AWS_REGION}
+
+    s3:
+      bucket: ${S3_BUCKET}
+
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+
+# Application base URL (used to generate QR code URLs pointing to the frontend)
+app:
+  base-url: ${APP_BASE_URL:http://localhost:5173}
+
+# SpringDoc / Swagger UI
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
