@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/photos/event/**").hasRole("HOST")
                         .requestMatchers("/host/**").hasRole("HOST")
                         .requestMatchers("/user/**").hasRole("USER")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtFilter,
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);

@@ -30,6 +30,7 @@ Spring Boot 3.3.5 / Java 17 backend. No frontend is included in this repo (front
 **Layer flow:** Controller → Service → Repository → MongoDB (Spring Data)
 
 **Package structure** under `com.sychoi.backend`:
+
 - `common/` — cross-cutting concerns: `config/` (S3, Security), `exception/` (GlobalExceptionHandler, CustomException), `s3/` (S3Service), `security/` (JwtProvider, JwtAuthenticationFilter)
 - `user/` — full implementation: registration, login, JWT issuance
 - `photo/` — partially stubbed; only `PhotoController` exists with a presigned-URL endpoint; domain/dto/repository/service are empty
@@ -39,23 +40,51 @@ Spring Boot 3.3.5 / Java 17 backend. No frontend is included in this repo (front
 **S3 upload flow:** Client calls `GET /photos/presigned-url` → backend generates a 10-minute S3 presigned URL → client uploads the file directly to S3.
 
 **Security rules:**
+
 - Public: `/auth/**`, `/photos/presigned-url`, `/swagger-ui/**`, `/v3/api-docs/**`
 - `HOST` role required: `/host/**`
 - `USER` role required: `/user/**`
 - All other routes require authentication
 
+## Coding Conventions
+
+- Use constructor injection only
+- Prefer final fields
+- Use Lombok (@RequiredArgsConstructor)
+- DTO naming: XxxRequest, XxxResponse
+- Controller returns ResponseEntity
+- Use Service layer for business logic only
+
+## Exception Handling
+
+- Use CustomException for business errors
+- All exceptions handled by GlobalExceptionHandler
+- Do not return raw exception messages
+
+## Testing
+
+- Use JUnit 5
+- Test Service layer primarily
+- Use @SpringBootTest only when necessary
+
+## Don't
+
+- Do not access Repository from Controller
+- Do not write business logic in Controller
+- Do not expose Entity directly in API response
+
 ## Configuration
 
 Active Spring profile is `local`, which reads `application-local.yml` (git-ignored). Required environment variables / local config values:
 
-| Variable | Purpose |
-|---|---|
-| `MONGO_URI` | MongoDB Atlas connection string |
-| `JWT_SECRET` | HMAC signing secret |
-| `AWS_REGION` | S3 region (default: `ap-northeast-2`) |
-| `AWS_ACCESS_KEY` | AWS access key |
-| `AWS_SECRET_KEY` | AWS secret key |
-| `S3_BUCKET` | S3 bucket name |
-| `APP_BASE_URL` | Frontend origin for CORS (default: `http://localhost:5173`) |
+| Variable         | Purpose                                                     |
+| ---------------- | ----------------------------------------------------------- |
+| `MONGO_URI`      | MongoDB Atlas connection string                             |
+| `JWT_SECRET`     | HMAC signing secret                                         |
+| `AWS_REGION`     | S3 region (default: `ap-northeast-2`)                       |
+| `AWS_ACCESS_KEY` | AWS access key                                              |
+| `AWS_SECRET_KEY` | AWS secret key                                              |
+| `S3_BUCKET`      | S3 bucket name                                              |
+| `APP_BASE_URL`   | Frontend origin for CORS (default: `http://localhost:5173`) |
 
 Swagger UI is available at `http://localhost:8080/swagger-ui/index.html` when the app is running.
