@@ -11,4 +11,5 @@ public class LoginResponse {
     private final String refreshToken;
     private final String tokenType;
     private final long expiresIn;
+    private final String nickname;
 }

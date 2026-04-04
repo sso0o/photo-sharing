@@ -28,4 +28,5 @@ export interface LoginResponse {
   refreshToken: string
   tokenType: string
   expiresIn: number
+  nickname: string
 }

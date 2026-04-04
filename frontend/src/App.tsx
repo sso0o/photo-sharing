@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { Button, Input, Card, Header, Container } from './components/ui/index.ts'
 import LoginPage from './pages/LoginPage.tsx'
 import SignUpPage from './pages/SignUpPage.tsx'
@@ -8,10 +8,39 @@ function App() {
   // useState<string>으로 타입을 명시해 의도를 명확히 한다
   const [inputValue, setInputValue] = useState<string>('')
   const [inputError, setInputError] = useState<string>('')
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem('accessToken'))
+
+  const navigate = useNavigate()
 
   function handleValidate() {
     setInputError(inputValue.length > 0 && inputValue.length < 3 ? '3자 이상 입력해주세요.' : '')
   }
+
+  function handleLogout() {
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('nickname')
+    setIsLoggedIn(false)
+    navigate('/')
+  }
+
+  const nickname = localStorage.getItem('nickname') ?? '회원'
+
+  const headerActions = isLoggedIn ? (
+    <>
+      <span className="text-app-text-h text-sm">{nickname}님 반갑습니다!</span>
+      <Button variant="secondary" size="sm" onClick={handleLogout}>로그아웃</Button>
+    </>
+  ) : (
+    <>
+      <Link to="/login">
+        <Button variant="secondary" size="sm">Log in</Button>
+      </Link>
+      <Link to="/signup">
+        <Button variant="primary" size="sm">Sign up</Button>
+      </Link>
+    </>
+  )
 
   const MainPage = (
     <div className="min-h-screen bg-app-bg">
@@ -24,14 +53,7 @@ function App() {
             <a href="#" className="hover:text-app-text-h transition-colors">About</a>
           </>
         }
-        actions={
-          <>
-            <Link to="/login">
-              <Button variant="secondary" size="sm">Log in</Button>
-            </Link>
-            <Button variant="primary" size="sm">Sign up</Button>
-          </>
-        }
+        actions={headerActions}
       />
 
       <Container maxWidth="7xl">

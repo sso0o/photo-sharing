@@ -68,6 +68,7 @@ public class UserService {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(jwtProvider.getExpirationMs() / 1000)
+                .nickname(user.getNickname())
                 .build();
     }
 }
