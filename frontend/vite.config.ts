@@ -7,11 +7,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
+      '/auth': { target: 'http://localhost:8080', changeOrigin: true },
+      '/photos': { target: 'http://localhost:8080', changeOrigin: true },
+      '/host': { target: 'http://localhost:8080', changeOrigin: true },
+      '/user': { target: 'http://localhost:8080', changeOrigin: true },
     },
   },
 })
