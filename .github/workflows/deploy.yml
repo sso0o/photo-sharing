@@ -19,7 +19,10 @@ jobs:
           distribution: 'temurin'
 
       - name: 빌드
-        run: cd backend && ./gradlew build -x test
+        run: |
+          cd backend
+          chmod +x gradlew
+          ./gradlew build -x test
 
       - name: jar 전송
         uses: appleboy/scp-action@v0.1.7
