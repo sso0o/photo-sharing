@@ -113,6 +113,30 @@ Frontend → S3 (직접 업로드)
 
 ---
 
+## 🌍 Deployment
+
+외부 접속 주소:
+
+```id="6c9v9p"
+http://54.180.54.23/
+```
+
+* 해당 주소로 접속하면 프론트엔드 페이지가 로드됩니다.
+* 프론트엔드는 내부적으로 백엔드 API와 통신합니다.
+
+---
+
+### 🔗 API Server
+
+```id="8b7q0k"
+http://54.180.54.23/api
+```
+
+* Nginx를 통해 `/api` 경로는 Spring Boot 서버로 프록시됩니다.
+
+
+---
+
 ## 🌐 Frontend
 
 ```bash
@@ -139,8 +163,28 @@ cd backend
 
 ## 🔗 API 연결
 
-* Base URL: http://localhost:8080
-* 인증: JWT (Authorization 헤더)
+### Local
+
+```bash
+http://localhost:8080
+```
+
+### Production
+
+```bash
+http://54.180.54.23/api
+```
+
+* Nginx를 통해 `/api` → Spring Boot로 프록시됨
+
+---
+
+### 🔐 인증
+
+```bash
+Authorization: Bearer <token>
+```
+
 
 ---
 
