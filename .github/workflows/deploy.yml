@@ -42,6 +42,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             export JWT_SECRET=${{ secrets.JWT_SECRET }}
+            export MONGODB_URI=${{ secrets.MONGODB_URI }}
             export AWS_REGION=${{ secrets.AWS_REGION }}
             export S3_BUCKET=${{ secrets.S3_BUCKET }}
             export AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
