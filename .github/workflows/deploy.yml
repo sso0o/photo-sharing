@@ -74,4 +74,8 @@ jobs:
             
             cd /home/ec2-user/app
             
-            nohup java -jar backend-0.0.1-SNAPSHOT.jar > /home/ec2-user/app/app.log 2>&1 &
+            # 기존 서버 종료 (안 죽어도 에러 안 나게)
+            ps -ef | grep 'backend-0.0.1-SNAPSHOT.jar' | grep -v grep | awk '{print $2}' | xargs -r kill -9 || true
+            
+            # 실행
+            nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
