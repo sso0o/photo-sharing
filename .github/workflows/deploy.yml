@@ -32,6 +32,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           source: "backend/build/libs/*.jar"
           target: "/home/ec2-user/app"
+          overwrite: true
 
       - name: 서버 실행
         uses: appleboy/ssh-action@v1
@@ -41,6 +42,4 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/ec2-user/app
-            pkill -f 'java -jar' || true
-            sleep 2
             nohup java -jar *.jar > app.log 2>&1 &
