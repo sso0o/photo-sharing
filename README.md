@@ -228,9 +228,13 @@ http://54.180.54.23/swagger-ui/index.html
 
 ## 📌 특징
 
-* JWT 기반 인증
-* S3 presigned URL 업로드 구조
-* Clean Architecture (Controller → Service → Repository)
-* MongoDB 사용
+- JWT 기반 Stateless 인증
+- ROLE 기반 접근 제어 (USER / HOST)
+- S3 Presigned URL 기반 Direct Upload 구조
+- React SPA 라우팅 + Spring Forward 처리
+- Nginx Reverse Proxy 기반 API 분리 (/api)
+- GlobalExceptionHandler 기반 예외 처리
+- DTO 분리 및 계층형 아키텍처 적용
+- MongoDB 기반 NoSQL 데이터 설계
 
 ---
