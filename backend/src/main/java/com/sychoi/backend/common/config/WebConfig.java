@@ -9,7 +9,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/{spring:^(?!swagger-ui|v3|api).*$}")
-                .setViewName("forward:/");
+        registry.addViewController("/")
+                .setViewName("forward:/index.html");
+
+        registry.addViewController("/{spring:^(?!api|swagger-ui|v3).*$}")
+                .setViewName("forward:/index.html");
     }
 }
