@@ -179,7 +179,7 @@ http://54.180.54.23/api
 
 ---
 
-### 🔐 인증
+## 🔐 인증
 
 ```bash
 Authorization: Bearer <token>
@@ -202,7 +202,11 @@ if (error.response.status === 403) {
 
 ## 📄 Swagger
 
+### Local
 http://localhost:8080/swagger-ui/index.html
+
+### Production
+http://54.180.54.23/swagger-ui/index.html
 
 ---
 
