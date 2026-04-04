@@ -2,6 +2,7 @@ package com.sychoi.backend.common.config;
 
 import com.sychoi.backend.common.security.JwtAuthenticationFilter;
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -35,12 +36,33 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs",
-                                "/", "/login", "/signup"   // SPA 진입 라우트
+                                "/", "/login", "/signup", "/403"   // SPA 진입 라우트
                         ).permitAll()
                         .requestMatchers("/photos/event/**").hasRole("HOST")
                         .requestMatchers("/host/**").hasRole("HOST")
                         .requestMatchers("/user/**").hasRole("USER")
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, e) -> {
+                            boolean isApiRequest = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+
+                            if (isApiRequest) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            } else {
+                                response.sendRedirect("/403");
+                            }
+
+                        })
+                        .accessDeniedHandler((request, response, e) -> {
+                            boolean isApiRequest = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+
+                            if (isApiRequest) {
+                                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            } else {
+                                response.sendRedirect("/403");
+                            }
+                        })
                 )
                 .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 

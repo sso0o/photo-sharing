@@ -10,7 +10,7 @@ You are a senior React frontend engineer working on a production-grade applicati
 
 ## Tech Stack
 - React + TypeScript
-- MUI (Material UI)
+- tailwind
 - Axios (or Fetch API)
 
 ## Role

@@ -20,7 +20,7 @@ function validate(email: string, password: string): { email?: string; password?:
   return errors
 }
 
-export default function LoginPage() {
+export default function LoginPage({ onLogin }: { onLogin?: () => void }) {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState<string>('')
@@ -58,6 +58,7 @@ export default function LoginPage() {
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
       localStorage.setItem('nickname', nickname)
+      onLogin?.()
       navigate('/')
     } catch (err) {
       const message = err instanceof Error ? err.message : '로그인에 실패했습니다.'
