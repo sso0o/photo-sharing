@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
 import { Button, Input, Card, Header, Container } from './components/ui/index.ts'
+import LoginPage from './pages/LoginPage.tsx'
 
 function App() {
   // useState<string>으로 타입을 명시해 의도를 명확히 한다
@@ -10,7 +12,7 @@ function App() {
     setInputError(inputValue.length > 0 && inputValue.length < 3 ? '3자 이상 입력해주세요.' : '')
   }
 
-  return (
+  const MainPage = (
     <div className="min-h-screen bg-app-bg">
       <Header
         brand="PhotoShare"
@@ -23,7 +25,9 @@ function App() {
         }
         actions={
           <>
-            <Button variant="secondary" size="sm">Log in</Button>
+            <Link to="/login">
+              <Button variant="secondary" size="sm">Log in</Button>
+            </Link>
             <Button variant="primary" size="sm">Sign up</Button>
           </>
         }
@@ -180,6 +184,13 @@ function App() {
 
       </Container>
     </div>
+  )
+
+  return (
+    <Routes>
+      <Route path="/" element={MainPage} />
+      <Route path="/login" element={<LoginPage />} />
+    </Routes>
   )
 }
 
