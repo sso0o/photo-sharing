@@ -41,5 +41,6 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/ec2-user/app
-            pkill -f '.jar' || true
+            pkill -f 'java -jar' || true
+            sleep 2
             nohup java -jar *.jar > app.log 2>&1 &
