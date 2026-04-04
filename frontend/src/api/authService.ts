@@ -1,6 +1,29 @@
 import axios from 'axios'
 import client from './client.ts'
-import type { LoginRequest, LoginResponse, ApiErrorResponse } from '../types/api.ts'
+import type { LoginRequest, LoginResponse, SignUpRequest, ApiErrorResponse } from '../types/api.ts'
+
+export async function signUp(payload: SignUpRequest): Promise<void> {
+  try {
+    await client.post('/auth/signup', payload)
+  } catch (err) {
+    if (axios.isAxiosError<ApiErrorResponse>(err)) {
+      const code = err.response?.data?.code
+      const serverMessage = err.response?.data?.message
+
+      if (code === 'DUPLICATE_EMAIL') {
+        throw new Error('이미 사용 중인 이메일입니다.')
+      }
+      if (code === 'DUPLICATE_NICKNAME') {
+        throw new Error('이미 사용 중인 닉네임입니다.')
+      }
+      if (err.response?.status === 400) {
+        throw new Error(serverMessage ?? '입력 형식을 확인해주세요.')
+      }
+    }
+
+    throw new Error('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.')
+  }
+}
 
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   try {

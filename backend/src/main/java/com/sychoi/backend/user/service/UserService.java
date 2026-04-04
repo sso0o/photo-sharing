@@ -26,7 +26,12 @@ public class UserService {
 
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException(HttpStatus.CONFLICT, "Email already exists");
+            throw new CustomException(HttpStatus.CONFLICT, "DUPLICATE_EMAIL", "이미 사용 중인 이메일입니다.");
+        }
+
+        // 닉네임 중복 체크
+        if (userRepository.existsByNickname(request.getNickname())) {
+            throw new CustomException(HttpStatus.CONFLICT, "DUPLICATE_NICKNAME", "이미 사용 중인 닉네임입니다.");
         }
 
         // 비밀번호 암호화
@@ -36,7 +41,8 @@ public class UserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
-                .role(request.getRole()) // USER or HOST
+                .role("ROLE_USER")
+                .nickname(request.getNickname())
                 .build();
 
         userRepository.save(user);

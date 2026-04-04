@@ -18,5 +18,7 @@ public class User {
 
     private String password;
 
-    private String role; // USER, HOST
+    private String role; // ROLE_USER, ROLE_HOST
+
+    private String nickname;
 }

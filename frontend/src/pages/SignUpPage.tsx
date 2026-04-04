@@ -1,31 +1,52 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Input, Card } from '../components/ui/index.ts'
-import { login } from '../api/authService.ts'
+import { signUp } from '../api/authService.ts'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const NICKNAME_REGEX = /^[가-힣a-zA-Z0-9_-]+$/
 
-function validate(email: string, password: string): { email?: string; password?: string } {
-  const errors: { email?: string; password?: string } = {}
+interface FieldErrors {
+  email?: string
+  password?: string
+  nickname?: string
+}
+
+function validate(email: string, password: string, nickname: string): FieldErrors {
+  const errors: FieldErrors = {}
+
   if (!email) {
     errors.email = '이메일을 입력해주세요.'
   } else if (!EMAIL_REGEX.test(email)) {
     errors.email = '올바른 이메일 형식을 입력해주세요.'
   }
+
   if (!password) {
     errors.password = '비밀번호를 입력해주세요.'
   } else if (password.length < 8) {
     errors.password = '비밀번호는 8자 이상이어야 합니다.'
   }
+
+  if (!nickname) {
+    errors.nickname = '닉네임을 입력해주세요.'
+  } else if (nickname.length < 2) {
+    errors.nickname = '닉네임은 2자 이상이어야 합니다.'
+  } else if (nickname.length > 30) {
+    errors.nickname = '닉네임은 30자 이하이어야 합니다.'
+  } else if (!NICKNAME_REGEX.test(nickname)) {
+    errors.nickname = '닉네임은 한글, 영문, 숫자, _, - 만 사용할 수 있습니다.'
+  }
+
   return errors
 }
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
+  const [nickname, setNickname] = useState<string>('')
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [apiError, setApiError] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -41,10 +62,16 @@ export default function LoginPage() {
     if (apiError) setApiError('')
   }
 
+  function handleNicknameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setNickname(e.target.value)
+    if (fieldErrors.nickname) setFieldErrors(prev => ({ ...prev, nickname: undefined }))
+    if (apiError) setApiError('')
+  }
+
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const errors = validate(email, password)
+    const errors = validate(email, password, nickname)
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors)
       return
@@ -54,12 +81,10 @@ export default function LoginPage() {
     setApiError('')
 
     try {
-      const { accessToken, refreshToken } = await login({ email, password })
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      navigate('/')
+      await signUp({ email, password, nickname })
+      navigate('/login')
     } catch (err) {
-      const message = err instanceof Error ? err.message : '로그인에 실패했습니다.'
+      const message = err instanceof Error ? err.message : '회원가입에 실패했습니다.'
       setApiError(message)
     } finally {
       setIsLoading(false)
@@ -74,7 +99,7 @@ export default function LoginPage() {
           <Link to="/" className="text-2xl font-bold text-app-text-h hover:text-accent-400 transition-colors">
             PhotoShare
           </Link>
-          <p className="text-app-text text-sm mt-2">계정에 로그인하세요</p>
+          <p className="text-app-text text-sm mt-2">새 계정을 만드세요</p>
         </div>
 
         <Card padding="lg">
@@ -100,6 +125,16 @@ export default function LoginPage() {
                 disabled={isLoading}
                 required
               />
+              <Input
+                label="닉네임"
+                type="text"
+                placeholder="홍길동"
+                value={nickname}
+                onChange={handleNicknameChange}
+                error={fieldErrors.nickname}
+                disabled={isLoading}
+                required
+              />
 
               {/* API 에러 메시지 */}
               {apiError && (
@@ -114,21 +149,16 @@ export default function LoginPage() {
                 fullWidth
                 disabled={isLoading}
               >
-                {isLoading ? '로그인 중...' : '로그인'}
+                {isLoading ? '가입 중...' : '회원가입'}
               </Button>
             </div>
           </form>
         </Card>
 
         <p className="text-center text-app-text text-sm mt-6">
-          계정이 없으신가요?{' '}
-          <Link to="/signup" className="text-accent-400 hover:text-accent-300 transition-colors">
-            회원가입
-          </Link>
-        </p>
-        <p className="text-center text-app-text text-sm mt-3">
-          <Link to="/" className="hover:text-accent-400 transition-colors">
-            ← 메인으로 돌아가기
+          이미 계정이 있으신가요?{' '}
+          <Link to="/login" className="text-accent-400 hover:text-accent-300 transition-colors">
+            로그인
           </Link>
         </p>
       </div>

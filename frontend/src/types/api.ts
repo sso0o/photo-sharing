@@ -10,6 +10,13 @@ export interface ApiErrorResponse {
   message: string
 }
 
+// POST /auth/signup
+export interface SignUpRequest {
+  email: string
+  password: string
+  nickname: string
+}
+
 // POST /auth/login
 export interface LoginRequest {
   email: string

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import { Button, Input, Card, Header, Container } from './components/ui/index.ts'
 import LoginPage from './pages/LoginPage.tsx'
+import SignUpPage from './pages/SignUpPage.tsx'
 
 function App() {
   // useState<string>으로 타입을 명시해 의도를 명확히 한다
@@ -190,6 +191,7 @@ function App() {
     <Routes>
       <Route path="/" element={MainPage} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
     </Routes>
   )
 }
