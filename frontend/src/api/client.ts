@@ -7,7 +7,7 @@ const client = axios.create({
 
 // 모든 요청에 JWT 토큰을 Authorization 헤더에 자동으로 추가한다
 client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('accessToken')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }

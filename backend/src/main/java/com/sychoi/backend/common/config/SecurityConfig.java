@@ -35,8 +35,8 @@ public class SecurityConfig {
                         .requestMatchers("/host/**").hasRole("HOST")
                         .requestMatchers("/user/**").hasRole("USER")
                         .anyRequest().permitAll()
-                );
-//                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                )
+                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

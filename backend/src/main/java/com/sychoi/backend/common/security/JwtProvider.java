@@ -27,6 +27,8 @@ public class JwtProvider {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    private static final long REFRESH_TOKEN_EXPIRATION_MS = 7L * 24 * 60 * 60 * 1000; // 7 days
+
     // 토큰 생성
     public String generateToken(String userId, String role) {
         Date now = new Date();
@@ -38,6 +40,21 @@ public class JwtProvider {
                 .setExpiration(new Date(now.getTime() + expirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateRefreshToken(String userId) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setSubject(userId)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION_MS))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public long getExpirationMs() {
+        return expirationMs;
     }
 
     // 토큰 검증
