@@ -1,6 +1,7 @@
 package com.sychoi.backend.common.config;
 
 import com.sychoi.backend.common.security.JwtAuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,16 +25,14 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers(
                                 "/auth/**",
                                 "/photos/presigned-url",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
-                                "/v3/api-docs",
-                                "/",
-                                "/login",
-                                "/signup"
+                                "/v3/api-docs"
                         ).permitAll()
                         .requestMatchers("/photos/event/**").hasRole("HOST")
                         .requestMatchers("/host/**").hasRole("HOST")
