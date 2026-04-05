@@ -24,3 +24,6 @@ backend/build/
 backend/.env
 backend/.idea/
 backend/src/main/resources/application-local.yml
+
+# Frontend build output (copied to backend static by Gradle)
+backend/src/main/resources/static/
