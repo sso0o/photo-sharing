@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -43,6 +45,7 @@ public class UserService {
                 .password(encodedPassword)
                 .role("ROLE_USER")
                 .nickname(request.getNickname())
+                .createdAt(Instant.now())
                 .build();
 
         userRepository.save(user);
@@ -69,6 +72,7 @@ public class UserService {
                 .tokenType("Bearer")
                 .expiresIn(jwtProvider.getExpirationMs() / 1000)
                 .nickname(user.getNickname())
+                .role(user.getRole())
                 .build();
     }
 }

@@ -54,12 +54,13 @@ export default function LoginPage({ onLogin }: { onLogin?: () => void }) {
     setApiError('')
 
     try {
-      const { accessToken, refreshToken, nickname } = await login({ email, password })
+      const { accessToken, refreshToken, nickname, role } = await login({ email, password })
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
       localStorage.setItem('nickname', nickname)
+      localStorage.setItem('role', role)
       onLogin?.()
-      navigate('/')
+      navigate(role === 'ROLE_ADMIN' ? '/admin' : '/')
     } catch (err) {
       const message = err instanceof Error ? err.message : '로그인에 실패했습니다.'
       setApiError(message)

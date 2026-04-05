@@ -4,6 +4,7 @@ import { Button, Input, Card, Header, Container } from './components/ui/index.ts
 import LoginPage from './pages/LoginPage.tsx'
 import SignUpPage from './pages/SignUpPage.tsx'
 import ForbiddenPage from './pages/ForbiddenPage.tsx'
+import AdminPage from './pages/AdminPage.tsx'
 
 function App() {
   // useState<string>으로 타입을 명시해 의도를 명확히 한다
@@ -21,6 +22,7 @@ function App() {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('nickname')
+    localStorage.removeItem('role')
     setIsLoggedIn(false)
     navigate('/')
   }
@@ -216,6 +218,7 @@ function App() {
       <Route path="/login" element={<LoginPage onLogin={() => { setIsLoggedIn(true) }} />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/403" element={<ForbiddenPage />} />
+      <Route path="/admin" element={<AdminPage />} />
     </Routes>
   )
 }

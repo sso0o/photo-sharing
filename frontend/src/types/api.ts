@@ -29,4 +29,5 @@ export interface LoginResponse {
   tokenType: string
   expiresIn: number
   nickname: string
+  role: string
 }

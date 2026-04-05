@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/photos/event/**").hasRole("HOST")
                         .requestMatchers("/host/**").hasRole("HOST")
                         .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
