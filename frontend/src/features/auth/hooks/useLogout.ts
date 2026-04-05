@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
+import { logout as logoutApi } from '../api/authService.ts'
 
 export function useLogout() {
   const navigate = useNavigate()
 
-  const logout = (redirectPath = '/') => {
+  const logout = async (redirectPath = '/') => {
+    await logoutApi()
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('nickname')

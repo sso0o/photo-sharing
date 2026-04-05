@@ -3,6 +3,14 @@ import client from '../../../api/client.ts'
 import type { LoginRequest, LoginResponse, SignUpRequest } from '../types.ts'
 import type { ApiErrorResponse } from '../../../types/api.ts'
 
+export async function logout(): Promise<void> {
+  try {
+    await client.post('/auth/logout')
+  } catch {
+    // 네트워크 오류가 있어도 클라이언트 측 로그아웃은 계속 진행
+  }
+}
+
 export async function signUp(payload: SignUpRequest): Promise<void> {
   try {
     await client.post('/auth/signup', payload)

@@ -19,6 +19,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -42,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
-            if (jwtProvider.validate(token)) {
+            if (jwtProvider.validate(token) && !tokenBlacklistService.isBlacklisted(token)) {
                 String userId = jwtProvider.getUserId(token);
                 String role = jwtProvider.getRole(token);
 

@@ -4,6 +4,7 @@ import com.sychoi.backend.user.dto.LoginRequest;
 import com.sychoi.backend.user.dto.LoginResponse;
 import com.sychoi.backend.user.dto.SignUpRequest;
 import com.sychoi.backend.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService userService;
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            userService.logout(header.substring(7));
+        }
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {

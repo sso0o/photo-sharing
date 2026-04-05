@@ -2,6 +2,7 @@ package com.sychoi.backend.user.service;
 
 import com.sychoi.backend.common.exception.CustomException;
 import com.sychoi.backend.common.security.JwtProvider;
+import com.sychoi.backend.common.security.TokenBlacklistService;
 import com.sychoi.backend.user.domain.User;
 import com.sychoi.backend.user.dto.LoginRequest;
 import com.sychoi.backend.user.dto.LoginResponse;
@@ -23,6 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public void signUp(SignUpRequest request) {
 
@@ -50,6 +52,12 @@ public class UserService {
 
         userRepository.save(user);
         log.info("New user registered: {}", request.getEmail());
+    }
+
+    public void logout(String token) {
+        if (jwtProvider.validate(token)) {
+            tokenBlacklistService.blacklist(token, jwtProvider.getExpiration(token));
+        }
     }
 
     public LoginResponse login(LoginRequest request) {
