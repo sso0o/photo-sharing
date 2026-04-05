@@ -161,10 +161,10 @@ Avoid: width / height / margin / padding
 
 ## Core Rules Summary
 
-- Functional components only  
-- Separate logic and UI (Container / Presentational)  
-- API calls must be handled in hooks only  
-- Always handle loading and error states  
-- Maintain immutability in state  
-- Extract reusable components  
-- Use semantic HTML  
+- Functional components only
+- Separate logic and UI (Container / Presentational)
+- API calls must be handled in hooks only
+- Always handle loading and error states
+- Maintain immutability in state
+- Extract reusable components
+- Use semantic HTML
