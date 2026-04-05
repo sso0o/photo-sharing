@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Input, Card } from '../components/ui/index.ts'
-import { signUp } from '../api/authService.ts'
+import { signUp } from '../features/auth/api/authService.ts'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const NICKNAME_REGEX = /^[가-힣a-zA-Z0-9_-]+$/

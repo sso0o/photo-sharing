@@ -1,6 +1,7 @@
 import axios from 'axios'
-import client from './client.ts'
-import type { LoginRequest, LoginResponse, SignUpRequest, ApiErrorResponse } from '../types/api.ts'
+import client from '../../../api/client.ts'
+import type { LoginRequest, LoginResponse, SignUpRequest } from '../types.ts'
+import type { ApiErrorResponse } from '../../../types/api.ts'
 
 export async function signUp(payload: SignUpRequest): Promise<void> {
   try {

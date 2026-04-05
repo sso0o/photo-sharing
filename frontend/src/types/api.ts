@@ -9,25 +9,3 @@ export interface ApiErrorResponse {
   code: string
   message: string
 }
-
-// POST /auth/signup
-export interface SignUpRequest {
-  email: string
-  password: string
-  nickname: string
-}
-
-// POST /auth/login
-export interface LoginRequest {
-  email: string
-  password: string
-}
-
-export interface LoginResponse {
-  accessToken: string
-  refreshToken: string
-  tokenType: string
-  expiresIn: number
-  nickname: string
-  role: string
-}

@@ -8,7 +8,7 @@ import AdminPage from './pages/AdminPage.tsx'
 import UserPage from './pages/UserPage.tsx'
 import EventPage from './pages/EventPage.tsx'
 import PhotoUploadPage from './pages/PhotoUploadPage.tsx'
-import { useLogout } from './hooks/useLogout.ts'
+import { useLogout } from './features/auth/hooks/useLogout.ts'
 
 function App() {
   // useState<string>으로 타입을 명시해 의도를 명확히 한다

@@ -14,10 +14,17 @@ client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config
 })
 
-// 403 응답 시 /403 페이지로 이동
+// 401 응답 시 /login으로 이동, 403 응답 시 /403 페이지로 이동
 client.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('nickname')
+      localStorage.removeItem('role')
+      window.location.href = '/login'
+    }
     if (error.response?.status === 403) {
       window.location.href = '/403'
     }

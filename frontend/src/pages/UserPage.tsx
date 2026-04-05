@@ -1,27 +1,14 @@
 import { useNavigate } from 'react-router-dom'
-import { Button, Card, Header } from '../components/ui/index.ts'
-import { useLogout } from '../hooks/useLogout.ts'
+import { Button, Card } from '../components/ui/index.ts'
+import SiteHeader from '../components/SiteHeader.tsx'
 
 export default function UserPage() {
   const navigate = useNavigate()
-  const logout = useLogout()
   const nickname = localStorage.getItem('nickname') ?? '회원'
-
-  function handleLogout() {
-    logout('/login')
-  }
 
   return (
     <div className="min-h-screen bg-app-bg flex flex-col">
-      <Header
-        brand="PhotoShare"
-        actions={
-          <>
-            <span className="text-app-text-h text-sm">{nickname}님 반갑습니다!</span>
-            <Button variant="secondary" size="sm" onClick={handleLogout}>logout</Button>
-          </>
-        }
-      />
+      <SiteHeader hideNav logoutRedirect="/login" />
       <div className="flex-1 flex flex-col items-center justify-center px-4">
       {/* 환영 메시지 */}
       <div className="text-center mb-12">
