@@ -238,3 +238,56 @@ http://54.180.54.23/swagger-ui/index.html
 - MongoDB 기반 NoSQL 데이터 설계
 
 ---
+
+## 🤖 AI-Assisted Development (Claude Code)
+
+이 프로젝트는 Claude Code를 활용하여 개발 생산성과 코드 품질을 향상시켰습니다.
+
+### 🧠 Custom Skills & Rules 설계
+
+프로젝트에 맞는 개발 규칙을 직접 정의하여 AI가 일관된 코드를 생성하도록 구성했습니다.
+
+#### Backend Rules
+- Controller → Service → Repository 계층 강제
+- DTO(Request/Response) 분리
+- GlobalExceptionHandler 기반 예외 처리
+- Validation (@Valid) 필수 적용
+- Controller에서 Repository 직접 접근 금지
+
+#### API Design Rules
+- RESTful URI 설계 (/events, /photos 등)
+- 역할 기반 접근 제어 (USER / HOST)
+- Presigned URL 기반 업로드 구조 유지 (파일 서버 처리 금지)
+
+#### Frontend Rules
+- React + TypeScript 기반 구조 유지
+- API 호출 로직 분리 (service layer)
+- 인증 상태 기반 라우팅 처리
+- 에러 상태 (403 등) 공통 처리
+
+---
+
+### ⚙️ Custom Agent 활용
+
+반복적인 개발 작업을 자동화하기 위해 역할별 AI 에이전트를 구성했습니다.
+
+#### Backend Agent
+- Spring Boot 코드 생성
+- API 설계 및 DTO 자동 생성
+- 인증 및 권한 로직 포함
+
+#### Frontend Agent
+- 페이지 및 컴포넌트 생성
+- API 연동 코드 작성
+- 상태 관리 및 라우팅 처리
+
+---
+
+### 🚀 효과
+
+- 코드 일관성 유지 (규칙 기반 생성)
+- 개발 속도 향상 (반복 작업 자동화)
+- 아키텍처 안정성 확보 (계층 구조 강제)
+- 휴먼 에러 감소 (검증 및 패턴 자동 적용)
+
+---
