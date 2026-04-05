@@ -25,8 +25,34 @@ export interface HostsPage {
   totalPages: number
 }
 
+export interface UserSummary {
+  id: string
+  email: string
+  nickname: string
+  createdAt: string
+}
+
+export interface UsersPage {
+  content: UserSummary[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+}
+
 export async function getStats(): Promise<AdminStats> {
   const { data } = await client.get<AdminStats>('/admin/hosts/stats')
+  return data
+}
+
+export async function getUsers(params: {
+  page?: number
+  size?: number
+  sort?: string
+  direction?: string
+  nickname?: string
+}): Promise<UsersPage> {
+  const { data } = await client.get<UsersPage>('/admin/users', { params })
   return data
 }
 

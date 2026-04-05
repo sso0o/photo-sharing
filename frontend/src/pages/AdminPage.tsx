@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Card, Header } from '../components/ui/index.ts'
 import {
   getStats,
+  getUsers,
   getHosts,
   promoteToHost,
   revokeHostRole,
   updateHostNickname,
   type AdminStats,
+  type UserSummary,
   type HostSummary,
 } from '../api/adminService.ts'
 
@@ -81,57 +83,6 @@ function NicknameCell({
   )
 }
 
-// ── Promote modal ───────────────────────────────────────────────────────────
-
-function PromoteModal({ onConfirm, onClose }: { onConfirm: (userId: string) => Promise<void>; onClose: () => void }) {
-  const [userId, setUserId] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-    e.preventDefault()
-    if (!userId.trim()) return
-    setLoading(true)
-    setError('')
-    try {
-      await onConfirm(userId.trim())
-      onClose()
-    } catch {
-      setError('호스트 승격에 실패했습니다. 사용자 ID를 확인해주세요.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-surface-800 border border-app-border rounded-lg p-6 w-full max-w-sm">
-        <h2 className="text-app-text-h font-semibold text-lg mb-4">호스트 승격</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label className="text-app-text text-sm mb-1 block">사용자 ID</label>
-            <input
-              autoFocus
-              className="w-full bg-surface-700 border border-app-border rounded px-3 py-2 text-app-text-h text-sm focus:outline-none focus:border-accent-400"
-              placeholder="MongoDB ObjectId"
-              value={userId}
-              onChange={e => setUserId(e.target.value)}
-              disabled={loading}
-            />
-          </div>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <div className="flex gap-3 justify-end">
-            <Button variant="secondary" onClick={onClose} disabled={loading}>취소</Button>
-            <Button type="submit" variant="primary" disabled={loading || !userId.trim()}>
-              {loading ? '처리 중...' : '승격'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-}
-
 // ── Main page ───────────────────────────────────────────────────────────────
 
 export default function AdminPage() {
@@ -139,6 +90,8 @@ export default function AdminPage() {
   const nickname = localStorage.getItem('nickname') ?? '관리자'
 
   const [stats, setStats] = useState<AdminStats | null>(null)
+  const [tab, setTab] = useState<'users' | 'hosts'>('users')
+  const [users, setUsers] = useState<UserSummary[]>([])
   const [hosts, setHosts] = useState<HostSummary[]>([])
   const [totalElements, setTotalElements] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
@@ -146,7 +99,6 @@ export default function AdminPage() {
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(true)
-  const [showPromoteModal, setShowPromoteModal] = useState(false)
 
   const PAGE_SIZE = 10
 
@@ -165,6 +117,18 @@ export default function AdminPage() {
       .catch(() => {})
   }, [])
 
+  const fetchUsers = useCallback(() => {
+    setLoading(true)
+    getUsers({ page, size: PAGE_SIZE, sort: 'createdAt', direction: 'desc', nickname: search || undefined })
+      .then(res => {
+        setUsers(res.content)
+        setTotalElements(res.totalElements)
+        setTotalPages(res.totalPages)
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [page, search])
+
   const fetchHosts = useCallback(() => {
     setLoading(true)
     getHosts({ page, size: PAGE_SIZE, sort: 'createdAt', direction: 'desc', nickname: search || undefined })
@@ -178,8 +142,12 @@ export default function AdminPage() {
   }, [page, search])
 
   useEffect(() => {
-    fetchHosts()
-  }, [fetchHosts])
+    if (tab === 'users') {
+      fetchUsers()
+    } else {
+      fetchHosts()
+    }
+  }, [tab, fetchUsers, fetchHosts])
 
   async function handleRevoke(id: string) {
     if (!confirm('호스트 권한을 회수하시겠습니까?')) return
@@ -188,15 +156,16 @@ export default function AdminPage() {
     getStats().then(setStats).catch(() => {})
   }
 
+  async function handlePromoteUser(id: string) {
+    if (!confirm('이 사용자를 호스트로 승격하시겠습니까?')) return
+    await promoteToHost(id)
+    setUsers(prev => prev.filter(u => u.id !== id))
+    getStats().then(setStats).catch(() => {})
+  }
+
   async function handleNicknameSave(id: string, newNickname: string) {
     await updateHostNickname(id, newNickname)
     setHosts(prev => prev.map(h => h.id === id ? { ...h, nickname: newNickname } : h))
-  }
-
-  async function handlePromote(userId: string) {
-    await promoteToHost(userId)
-    fetchHosts()
-    getStats().then(setStats).catch(() => {})
   }
 
   function handleSearch(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -230,33 +199,54 @@ export default function AdminPage() {
           </div>
         </section>
 
-        {/* Hosts table */}
+        {/* Tabs */}
+        <div className="flex gap-3 mb-6 border-b border-app-border">
+          <button
+            onClick={() => { setTab('users'); setPage(0); setSearch(''); setSearchInput('') }}
+            className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+              tab === 'users'
+                ? 'text-accent-400 border-b-accent-400'
+                : 'text-app-text border-b-transparent hover:text-app-text-h'
+            }`}
+          >
+            일반 회원 ({stats?.totalUsers || 0})
+          </button>
+          <button
+            onClick={() => { setTab('hosts'); setPage(0); setSearch(''); setSearchInput('') }}
+            className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+              tab === 'hosts'
+                ? 'text-accent-400 border-b-accent-400'
+                : 'text-app-text border-b-transparent hover:text-app-text-h'
+            }`}
+          >
+            호스트 ({stats?.totalHosts || 0})
+          </button>
+        </div>
+
+        {/* Table */}
         <Card>
           {/* Table header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
-              <h2 className="text-app-text-h font-semibold text-lg">호스트 관리</h2>
+              <h2 className="text-app-text-h font-semibold text-lg">
+                {tab === 'users' ? '회원 관리' : '호스트 관리'}
+              </h2>
               <p className="text-app-text text-sm">총 {totalElements.toLocaleString()}명</p>
             </div>
-            <div className="flex items-center gap-2">
-              <form onSubmit={handleSearch} className="flex gap-2">
-                <input
-                  className="bg-surface-700 border border-app-border rounded px-3 py-1.5 text-app-text-h text-sm focus:outline-none focus:border-accent-400 w-40"
-                  placeholder="닉네임 검색"
-                  value={searchInput}
-                  onChange={e => setSearchInput(e.target.value)}
-                />
-                <Button type="submit" variant="secondary" size="sm">검색</Button>
-                {search && (
-                  <Button variant="ghost" size="sm" onClick={() => { setSearchInput(''); setSearch(''); setPage(0) }}>
-                    초기화
-                  </Button>
-                )}
-              </form>
-              <Button variant="primary" size="sm" onClick={() => setShowPromoteModal(true)}>
-                + 호스트 승격
-              </Button>
-            </div>
+            <form onSubmit={handleSearch} className="flex gap-2">
+              <input
+                className="bg-surface-700 border border-app-border rounded px-3 py-1.5 text-app-text-h text-sm focus:outline-none focus:border-accent-400 w-40"
+                placeholder="닉네임 검색"
+                value={searchInput}
+                onChange={e => setSearchInput(e.target.value)}
+              />
+              <Button type="submit" variant="secondary" size="sm">검색</Button>
+              {search && (
+                <Button variant="ghost" size="sm" onClick={() => { setSearchInput(''); setSearch(''); setPage(0) }}>
+                  초기화
+                </Button>
+              )}
+            </form>
           </div>
 
           {/* Table */}
@@ -281,12 +271,31 @@ export default function AdminPage() {
                       ))}
                     </tr>
                   ))
-                ) : hosts.length === 0 ? (
+                ) : (tab === 'users' ? users : hosts).length === 0 ? (
                   <tr>
                     <td colSpan={4} className="py-12 text-center text-app-text">
-                      {search ? `"${search}" 검색 결과가 없습니다.` : '등록된 호스트가 없습니다.'}
+                      {search ? `"${search}" 검색 결과가 없습니다.` : `등록된 ${tab === 'users' ? '회원' : '호스트'}이 없습니다.`}
                     </td>
                   </tr>
+                ) : tab === 'users' ? (
+                  users.map(user => (
+                    <tr key={user.id} className="border-b border-app-border last:border-0 hover:bg-surface-700/30 transition-colors">
+                      <td className="py-3 pr-4 text-app-text-h">{user.nickname}</td>
+                      <td className="py-3 pr-4 text-app-text">{user.email}</td>
+                      <td className="py-3 pr-4 text-app-text">
+                        {new Date(user.createdAt).toLocaleDateString('ko-KR')}
+                      </td>
+                      <td className="py-3 text-right">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => handlePromoteUser(user.id)}
+                        >
+                          호스트로 승격
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
                 ) : (
                   hosts.map(host => (
                     <tr key={host.id} className="border-b border-app-border last:border-0 hover:bg-surface-700/30 transition-colors">
@@ -332,13 +341,6 @@ export default function AdminPage() {
           )}
         </Card>
       </main>
-
-      {showPromoteModal && (
-        <PromoteModal
-          onConfirm={handlePromote}
-          onClose={() => setShowPromoteModal(false)}
-        />
-      )}
     </div>
   )
 }

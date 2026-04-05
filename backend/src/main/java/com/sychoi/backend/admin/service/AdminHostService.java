@@ -133,6 +133,45 @@ public class AdminHostService {
                 .build();
     }
 
+    public Map<String, Object> getUsers(int page, int size, String sort, String direction, String nickname) {
+        if (!VALID_SORT_FIELDS.contains(sort)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "INVALID_INPUT",
+                    "정렬 기준은 createdAt, nickname, email 중 하나여야 합니다.");
+        }
+
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Page<User> userPage;
+        if (nickname != null && !nickname.isBlank()) {
+            userPage = userRepository.findAllByRoleAndNicknameContainingIgnoreCase("ROLE_USER", nickname, pageable);
+        } else {
+            userPage = userRepository.findAllByRole("ROLE_USER", pageable);
+        }
+
+        List<HostSummaryResponse> content = userPage.getContent().stream()
+                .map(user -> HostSummaryResponse.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .nickname(user.getNickname())
+                        .createdAt(user.getCreatedAt())
+                        .build())
+                .toList();
+
+        log.info("Admin fetched user list: page={}, size={}, total={}", page, size, userPage.getTotalElements());
+
+        return Map.of(
+                "content", content,
+                "page", userPage.getNumber(),
+                "size", userPage.getSize(),
+                "totalElements", userPage.getTotalElements(),
+                "totalPages", userPage.getTotalPages()
+        );
+    }
+
     public void revokeHostRole(String id) {
         User user = userRepository.findByIdAndRole(id, "ROLE_HOST")
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "HOST_NOT_FOUND", "호스트를 찾을 수 없습니다."));
