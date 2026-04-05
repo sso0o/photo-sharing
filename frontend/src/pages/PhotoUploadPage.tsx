@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import QRCode from 'qrcode.react'
+import QRCode from 'react-qr-code'
 import { Button, Card, Header, Container } from '../components/ui/index.ts'
 import { useLogout } from '../hooks/useLogout.ts'
 
@@ -204,7 +204,6 @@ export default function PhotoUploadPage() {
                     value={`${window.location.origin}/events/${selectedEvent.id}`}
                     size={200}
                     level="H"
-                    includeMargin={true}
                     className="mb-4"
                   />
                   <p className="text-app-text text-xs text-center opacity-75">
