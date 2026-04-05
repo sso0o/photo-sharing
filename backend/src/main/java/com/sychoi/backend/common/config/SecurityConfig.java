@@ -38,8 +38,6 @@ public class SecurityConfig {
                                 "/v3/api-docs",
                                 "/", "/login", "/signup", "/403"   // SPA 진입 라우트
                         ).permitAll()
-                        .requestMatchers("/photos/event/**").hasRole("HOST")
-                        .requestMatchers("/host/**").hasRole("HOST")
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

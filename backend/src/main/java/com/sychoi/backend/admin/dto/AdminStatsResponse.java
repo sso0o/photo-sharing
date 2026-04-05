@@ -8,6 +8,5 @@ import lombok.Getter;
 public class AdminStatsResponse {
 
     private long totalUsers;
-    private long totalHosts;
     private long totalAdmins;
 }

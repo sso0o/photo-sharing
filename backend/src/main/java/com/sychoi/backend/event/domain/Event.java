@@ -1,28 +1,23 @@
-package com.sychoi.backend.user.domain;
+package com.sychoi.backend.event.domain;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.time.Instant;
 
-@Document(collection = "users")
+@Document(collection = "events")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-
+public class Event {
     @Id
     private String id;
-
-    private String email;
-
-    private String password;
-
-    private String role; // ROLE_USER, ROLE_ADMIN
-
-    private String nickname;
-
+    private String title;
+    private String description;
+    @Indexed
+    private String createdByUserId;
     private Instant createdAt;
 }

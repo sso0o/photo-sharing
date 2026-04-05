@@ -1,30 +1,29 @@
 import { useState } from 'react'
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import { Button, Input, Card, Header, Container } from './components/ui/index.ts'
 import LoginPage from './pages/LoginPage.tsx'
 import SignUpPage from './pages/SignUpPage.tsx'
 import ForbiddenPage from './pages/ForbiddenPage.tsx'
 import AdminPage from './pages/AdminPage.tsx'
+import UserPage from './pages/UserPage.tsx'
+import EventPage from './pages/EventPage.tsx'
+import PhotoUploadPage from './pages/PhotoUploadPage.tsx'
+import { useLogout } from './hooks/useLogout.ts'
 
 function App() {
   // useState<string>으로 타입을 명시해 의도를 명확히 한다
   const [inputValue, setInputValue] = useState<string>('')
   const [inputError, setInputError] = useState<string>('')
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem('accessToken'))
 
-  const navigate = useNavigate()
+  const logout = useLogout()
+  const isLoggedIn = !!localStorage.getItem('accessToken')
 
   function handleValidate() {
     setInputError(inputValue.length > 0 && inputValue.length < 3 ? '3자 이상 입력해주세요.' : '')
   }
 
   function handleLogout() {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('nickname')
-    localStorage.removeItem('role')
-    setIsLoggedIn(false)
-    navigate('/')
+    logout('/')
   }
 
   const nickname = localStorage.getItem('nickname') ?? '회원'
@@ -53,7 +52,7 @@ function App() {
           <>
             <a href="#" className="hover:text-app-text-h transition-colors">Gallery</a>
             <a href="#" className="hover:text-app-text-h transition-colors">Upload</a>
-            <a href="#" className="hover:text-app-text-h transition-colors">About</a>
+            <Link to="/events" className="hover:text-app-text-h transition-colors">Events</Link>
           </>
         }
         actions={headerActions}
@@ -215,10 +214,13 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={MainPage} />
-      <Route path="/login" element={<LoginPage onLogin={() => { setIsLoggedIn(true) }} />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/403" element={<ForbiddenPage />} />
       <Route path="/admin" element={<AdminPage />} />
+      <Route path="/user" element={<UserPage />} />
+      <Route path="/events" element={<EventPage />} />
+      <Route path="/photos/upload" element={<PhotoUploadPage />} />
     </Routes>
   )
 }

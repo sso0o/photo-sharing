@@ -20,7 +20,7 @@ function validate(email: string, password: string): { email?: string; password?:
   return errors
 }
 
-export default function LoginPage({ onLogin }: { onLogin?: () => void }) {
+export default function LoginPage() {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState<string>('')
@@ -59,8 +59,7 @@ export default function LoginPage({ onLogin }: { onLogin?: () => void }) {
       localStorage.setItem('refreshToken', refreshToken)
       localStorage.setItem('nickname', nickname)
       localStorage.setItem('role', role)
-      onLogin?.()
-      navigate(role === 'ROLE_ADMIN' ? '/admin' : '/')
+      navigate(role === 'ROLE_ADMIN' ? '/admin' : '/user')
     } catch (err) {
       const message = err instanceof Error ? err.message : '로그인에 실패했습니다.'
       setApiError(message)
